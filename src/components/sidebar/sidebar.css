@@ -1,0 +1,132 @@
+.right_sidebar {
+  width: 350px;
+}
+.profile_sidebar {
+  margin-top: -50px !important;
+}
+
+.sidebar_content {
+  width: 400px;
+  height: 90vh;
+  z-index: 3333;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  position: fixed;
+  left: -181px;
+  top: 0;
+  transition: all 0.4s ease;
+}
+
+.chevron_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+  right: -16px;
+  top: 10px;
+  transition: all 0.4s ease;
+}
+.hided_sidebar {
+  left: -563px;
+  transition: all 0.4s ease;
+}
+.chevron_btn_hided {
+  right: -40px;
+  transition: all 0.4s ease;
+}
+.sidebar_links {
+  padding: 10px;
+}
+
+.sidebar_wrapper {
+  transform: rotate(-270deg);
+  width: 760px;
+  margin-top: 181px;
+  height: 400px;
+  z-index: 111;
+  background: transparent;
+  left: 0;
+}
+.sidebar_wrapper .editor-field__container {
+  height: 383px;
+}
+.right_sidebar .editor-field__container {
+  background: #0f1020;
+}
+.sidebar_opener {
+  width: 150px;
+  height: 32px;
+  cursor: pointer;
+  bottom: 16px;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  padding-left: 40px;
+}
+.sidebar_wrapper .editor-field__label-container:after {
+  bottom: 17px;
+}
+.sidebar_content_items {
+  position: absolute;
+  left: -60px;
+  top: 110px;
+  width: 350px;
+  transform: rotate(270deg);
+}
+
+.sidebar_content_link p {
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  font-weight: 600;
+  padding: 0 24px 0 16px;
+  color: #4ac5ff;
+  font-family: Goldman;
+  cursor: pointer;
+}
+.sidebar_wrapper .editor-field__container {
+  border: 4px solid #4ac5ff;
+  background: #0f1020;
+}
+
+.sidebar_content .editor-field__label {
+  position: relative;
+  display: block;
+  height: 16px;
+  width: auto;
+  background: #4ac5ff;
+  left: 0px;
+  color: #0f1020;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  font-weight: 600;
+  padding: 0 24px 0 16px;
+  display: flex;
+  align-items: center;
+  font-family: Goldman;
+  -webkit-clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 0% 100%);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 0% 100%);
+  bottom: 0;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar_content .editor-field__label-container:after {
+  bottom: 2px;
+}
+.sidebar_content .editor-field__label-container {
+  position: absolute;
+  top: 0;
+  height: 50px !important;
+  width: 120px;
+  height: 50px;
+  bottom: 0;
+}

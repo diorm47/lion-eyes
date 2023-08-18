@@ -1,0 +1,76 @@
+.camera_page {
+  width: 100%;
+}
+.camera_page 
+.camera_list {
+   overflow-x: hidden;
+}
+.camera_wrapper {
+  display: flex;
+  align-items: start;
+  justify-content: space-evenly;
+  padding-top: 50px;
+}
+.camera_list_wrapper {
+  width: 500px;
+}
+.camera_item_view {
+  width: 800px;
+}
+.camera_item_view .wrapper,
+.camera_item_view .cyber_block {
+  min-height: 290px;
+}
+.camera_list_item {
+  width: 87%;
+  margin: 0 auto;
+  margin-bottom: 50px;
+  cursor: pointer;
+}
+.camera_item_view img {
+  width: 100%;
+}
+.camera_list {
+  max-height: 550px;
+  overflow: auto;
+  padding-top: 30px;
+  margin-top: -30px;
+}
+.camera_list::-webkit-scrollbar {
+  background-color: transparent;
+  height: 4px;
+  width: 3px;
+}
+.camera_list::-webkit-scrollbar-thumb {
+  background: rgba(44, 44, 44, 0.289);
+}
+.add_camera_btn .add_ser_btn .btn {
+  margin: 0;
+}
+
+
+.camera_item_actions {
+  position: absolute;
+  display: flex;
+  align-items: start;
+  transition: all 0.5s ease;
+}
+.camera_item_actions button {
+  cursor: pointer;
+  margin: 0 7px;
+  padding: 3px 4px;
+
+  background: #4ac5ff;
+  border: none;
+  color: #0f1020;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  font-weight: 600;
+}
+
+.camera_item_actions_hided {
+  display: none;
+}
+
+

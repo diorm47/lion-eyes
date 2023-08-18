@@ -1,0 +1,14 @@
+.snackbar_wrapper {
+  width: 300px;
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  transition: all 1s ease;
+  z-index: 1111;
+  background: #0f1020;
+}
+
+.hided_snack {
+  left: -100%;
+  transition: all 1s ease;
+}

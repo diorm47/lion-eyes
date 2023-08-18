@@ -1,0 +1,254 @@
+.users_page {
+  width: 100%;
+  height: auto;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.users_col {
+  position: relative;
+  width: 450px;
+
+  margin-left: 150px;
+}
+.users_list {
+  width: 1200px;
+  margin: 0 auto;
+}
+.users_page_sidebar .sidebar_wrapper {
+  margin-top: 225px;
+}
+.mt_40px {
+  margin-top: 50px !important;
+}
+.right_employer_input .btn {
+  width: 170px;
+}
+
+.users_list_item {
+  width: 600px;
+  height: 300px;
+  position: absolute;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+.users_list_item:hover {
+  margin-top: -50px;
+  transition: all 0.4s ease;
+}
+.z_index_1111 {
+  z-index: 1000 !important;
+}
+.users_list_item .cyber_block {
+  height: 300px;
+}
+.users_list_item .big_wrapper {
+  background: #0f1020;
+  height: 300px;
+  border-bottom-left-radius: 21px;
+  border-top-right-radius: 21px;
+}
+.users_col .users_list_item:nth-child(1) {
+  z-index: 111;
+  top: 20px;
+  left: 20px;
+}
+
+.users_col .users_list_item:nth-child(2) {
+  z-index: 111;
+  top: 40px;
+  left: 40px;
+}
+.users_col .users_list_item:nth-child(3) {
+  z-index: 121;
+  top: 60px;
+  left: 60px;
+}
+.users_col .users_list_item:nth-child(4) {
+  z-index: 131;
+  top: 80px;
+  left: 80px;
+}
+.users_col .users_list_item:nth-child(5) {
+  z-index: 131;
+  top: 100px;
+  left: 100px;
+}
+.users_col .users_list_item:nth-child(6) {
+  z-index: 131;
+  top: 120px;
+  left: 120px;
+}
+.users_col .users_list_item:nth-child(7) {
+  z-index: 131;
+  top: 140px;
+  left: 140px;
+}
+.users_col .users_list_item:nth-child(8) {
+  z-index: 131;
+  top: 160px;
+  left: 160px;
+}
+.users_col .users_list_item:nth-child(9) {
+  z-index: 131;
+  top: 180px;
+  left: 180px;
+}
+.users_col .users_list_item:nth-child(10) {
+  z-index: 131;
+  top: 200px;
+  left: 200px;
+  margin-top: -50px;
+}
+
+.mt_none {
+  margin-top: 0 !important;
+}
+.right_employer_desc p {
+  margin-bottom: 15px;
+  font-size: 19px;
+  margin-left: 10px;
+}
+
+.add_user_from {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 40px;
+  overflow: hidden;
+
+}
+.form_users {
+  width: 550px;
+  z-index: 1111;
+
+  padding: 0 30px;
+  padding-bottom: 0;
+  border-radius: 20px;
+}
+.form_users .big_wrapper {
+  margin-bottom: 30px;
+}
+.form_users .cyber_block {
+  background: #0f1020;
+}
+
+.employer_card {
+  display: flex;
+}
+.employer_card .employer_left_img {
+  width: 200px;
+  height: 158px;
+
+  margin-right: 15px;
+}
+.employer_card .employer_left_img img {
+  width: 200px;
+  height: 280px;
+  object-fit: cover;
+}
+
+.right_employer_desc div {
+ 
+  display: flex;
+  /* align-items: center; */
+}
+.right_employer_desc div p:first-child {
+  margin-right: 8px;
+}
+
+.save_employer .btn {
+  margin: 0;
+}
+
+input[type="file"]::file-selector-button {
+  background: #0f1020;
+  color: #b3b5d2;
+  cursor: pointer;
+  border: 1px solid #b3b5d2;
+  border-radius: 5px;
+  padding: 4px 7px;
+}
+
+.file_ipload_input {
+  display: flex;
+  justify-content: space-between;
+}
+.right_employer_input input {
+  width: 200px;
+
+  height: auto;
+  padding: 0;
+  background: transparent !important;
+}
+.mb_20px {
+  margin-bottom: 10px;
+}
+.right_employer_input {
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.file_ipload_input .big_wrapper,
+.file_ipload_input .wrapper,
+.file_ipload_input .cyber_block {
+  width: 160px;
+  min-height: 160px;
+}
+
+.file_ipload_input .big_wrapper img {
+  width: 135px;
+  height: 160px;
+  object-fit: cover;
+}
+
+.right_employer_input input {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.save_employer {
+  margin-bottom: 30px !important;
+}
+.user_actions {
+  right: 0;
+  top: -16px;
+}
+
+.search_input,
+.search_input .cyber_block,
+.search_input .wrapper {
+  width: 600px;
+  height: 40px;
+}
+.users_page .add_ser_btn {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  width: 1200px;
+  margin: 0 auto;
+  margin-bottom: 100px;
+}
+
+.search_input input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #b3b5d2;
+}
+
+.file_ipload_input .big_wrapper:first-child {
+  margin-bottom: 0;
+}

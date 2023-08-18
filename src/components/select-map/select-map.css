@@ -1,0 +1,14 @@
+.center_marker {
+  position: absolute;
+  z-index: 1111;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  left: 50%;
+  margin-left: -20px;
+  top: 50%;
+  margin-top: -20px;
+}
+.center_marker img {
+  width: 100%;
+}

@@ -258,39 +258,36 @@ function CameraPage({ mainURl }) {
               </div>
             </div>
           </div>
-          {activeCamera ? (
-            <div className="camera_item_view">
-              <div className="big_wrapper">
-                <div className="wrapper">
-                  <div className="label-container__top">
-                    <label htmlFor="" className="label-inner">
-                      ID: {activeCamera.camera_name}
-                    </label>
-                  </div>
-                  <div className="cyber_block">
-                    <div className="cyber_block_inner">
-                      {/* <img
+
+          <div className="camera_item_view">
+            <div className="big_wrapper">
+              <div className="wrapper">
+                <div className="label-container__top">
+                  <label htmlFor="" className="label-inner">
+                    ID: {activeCamera.camera_name}
+                  </label>
+                </div>
+                <div className="cyber_block">
+                  <div className="cyber_block_inner">
+                    {/* <img
                         src={
                           mainURl + "/ip/stream/?camera=" + activeCamera.address
                         }
                         alt={activeCamera.address}
                       /> */}
-                      <SelectMap />
-                    </div>
+                    <SelectMap />
                   </div>
+                </div>
 
-                  <div className="label-container__bottom">
-                    <label htmlFor="" className="label-inner">
-                      {" "}
-                      - - -{" "}
-                    </label>
-                  </div>
+                <div className="label-container__bottom">
+                  <label htmlFor="" className="label-inner">
+                    {" "}
+                    - - -{" "}
+                  </label>
                 </div>
               </div>
             </div>
-          ) : (
-            ""
-          )}
+          </div>
         </div>
       </div>
 

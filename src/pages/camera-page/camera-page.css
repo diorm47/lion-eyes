@@ -1,9 +1,8 @@
 .camera_page {
   width: 100%;
 }
-.camera_page 
-.camera_list {
-   overflow-x: hidden;
+.camera_page .camera_list {
+  overflow-x: hidden;
 }
 .camera_wrapper {
   display: flex;
@@ -12,10 +11,10 @@
   padding-top: 50px;
 }
 .camera_list_wrapper {
-  width: 500px;
+  width: 350px;
 }
 .camera_item_view {
-  width: 800px;
+  width: 950px;
 }
 .camera_item_view .wrapper,
 .camera_item_view .cyber_block {
@@ -47,7 +46,12 @@
 .add_camera_btn .add_ser_btn .btn {
   margin: 0;
 }
-
+.add_camera_btn_location {
+  position: absolute;
+  z-index: 1111;
+  right: 20px;
+  bottom: 20px;
+}
 
 .camera_item_actions {
   position: absolute;
@@ -73,4 +77,8 @@
   display: none;
 }
 
-
+.add_camera_from .cyber_block {
+  height: 50px;
+  display: flex;
+  align-items: center;
+}

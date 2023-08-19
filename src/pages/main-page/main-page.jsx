@@ -16,9 +16,10 @@ import redMarker from "../../assets/red-marker.png";
 import card from "../../assets/qLj2yc.jpg";
 import "./main-page.css";
 
-function SetViewOnClick({ coords }) {
+function SetViewOnClick({ coords, zoomCustom }) {
   const map = useMap();
-  map.flyTo(coords, 17);
+  map.flyTo(coords, zoomCustom);
+
   return null;
 }
 
@@ -27,11 +28,9 @@ function MainPage() {
   const [centerPositions, setCenterPositions] = useState([
     40.99681833333333, 71.64040666666666,
   ]);
-  const [zoomCustom, setZoom] = useState(13);
+  const [zoomCustom, setZoom] = useState(12);
   const [locationInfo, setLocationInfo] = useState();
-  const [camera, setCamera] = useState([]);
 
-  const [cameras, setCameras] = useState([]);
   const token = sessionStorage.getItem("token");
 
   const headersList = {
@@ -39,8 +38,10 @@ function MainPage() {
     Authorization: `Token ${token}`,
   };
   const getJsonLocation = (location) => {
-    const coordinates = location.slice(1, -1).split(", ").map(Number);
-    // console.log(location);
+    const coordinates = location
+      .slice(1, -1)
+      .split(",")
+      .map((num) => parseFloat(num.trim()));
     return coordinates;
   };
 
@@ -67,22 +68,22 @@ function MainPage() {
     setCenterPositions();
     setCenterPositions(getJsonLocation(item.location));
     setZoom(15);
-    console.log(centerPositions);
-    console.log(getJsonLocation(item.location));
+
     if (centerPositions === getJsonLocation(item.location)) {
       setLocationInfo(item);
     } else {
       setTimeout(() => {
         setLocationInfo(item);
-      }, 2000);
+      }, 1400);
     }
   };
 
   const showInfoModal = (position) => {
     setLocationInfo(position);
-    setCenterPositions(position.position);
+    setCenterPositions(getJsonLocation(position.location));
     setZoom(15);
   };
+
 
   return (
     <div className="page_wrapper main_page">
@@ -146,11 +147,7 @@ function MainPage() {
                   ""
                 )}
                 <MapContainer
-                  center={
-                    centerPositions && centerPositions.location
-                      ? getJsonLocation(centerPositions.location)
-                      : [40.99681833333333, 71.64040666666666]
-                  }
+                  center={centerPositions}
                   zoom={zoomCustom}
                   scrollWheelZoom={true}
                 >
@@ -167,10 +164,10 @@ function MainPage() {
                         icon={
                           new L.Icon({
                             iconUrl:
-                              centerPositions ===
-                              getJsonLocation(position.location)
+                              centerPositions === position.location
                                 ? redMarker
                                 : marker,
+
                             iconSize: [40, 40],
                             iconAnchor: [20, 40],
                             popupAnchor: [0, -40],
@@ -187,11 +184,8 @@ function MainPage() {
                     ))}
 
                   <SetViewOnClick
-                    coords={
-                      centerPositions && centerPositions.location
-                        ? getJsonLocation(centerPositions.location)
-                        : [40.99681833333333, 71.64040666666666]
-                    }
+                    coords={centerPositions}
+                    zoomCustom={zoomCustom}
                   />
                 </MapContainer>
               </div>

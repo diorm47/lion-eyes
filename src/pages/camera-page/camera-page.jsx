@@ -10,10 +10,11 @@ function CameraPage({ mainURl }) {
   const [isFormVisible, setFormVisible] = useState(false);
   const [activeCamera, setActiveCamera] = useState(false);
   const [updatingCamera, setUpdatingCamera] = useState(false);
-  const [updatingCameraData, setUpdatingCameraData] = useState();
+
   const [cameraID, setCameraID] = useState();
   const [cameraIP, setCameraIP] = useState();
   const [cameras, setCameras] = useState([]);
+  const [thisLocation, setThisLocation] = useState([]);
 
   const [isSideBarVisible, setSidebarVisible] = useState(false);
   const [activeActions, setActiveActions] = useState();
@@ -27,6 +28,13 @@ function CameraPage({ mainURl }) {
   //     navigate("/login");
   //   }
   // }, [navigate, token]);
+  const getJsonLocation = (location) => {
+    const coordinates = location
+      .slice(1, -1)
+      .split(",")
+      .map((num) => parseFloat(num.trim()));
+    return coordinates;
+  };
 
   const headersList = {
     Accept: "*/*",
@@ -34,7 +42,7 @@ function CameraPage({ mainURl }) {
     Authorization: `Token ${token}`,
   };
 
-  useEffect(() => {
+  const refreshCameraPage = () => {
     const reqOptions = {
       url: `${localStorage.getItem("apiAdress")}/camera/`,
       method: "GET",
@@ -45,29 +53,16 @@ function CameraPage({ mainURl }) {
       .request(reqOptions)
       .then((response) => {
         setCameras(response.data);
-        setActiveCamera(response.data[0]);
-      })
-      .catch((error) => {
-        console.error("Ошибка", error);
-      });
-  }, []);
-  const refreshCameraPage = () => {
-    let reqOptions = {
-      url: `${mainURl}ip/list/`,
-      method: "GET",
-      headers: headersList,
-    };
-
-    axios
-      .request(reqOptions)
-      .then((response) => {
-        setCameras(response.data);
-        setActiveCamera(response.data[0] || null);
+        setActiveCamera(getJsonLocation(response.data[0].location));
       })
       .catch((error) => {
         console.error("Ошибка", error);
       });
   };
+
+  useEffect(() => {
+    refreshCameraPage();
+  }, []);
 
   const handleModalOverlay = () => {
     setFormVisible(false);
@@ -75,16 +70,24 @@ function CameraPage({ mainURl }) {
     setUpdatingCamera(false);
   };
   const saveCamera = () => {
-    let bodyContent = JSON.stringify({
-      name: cameraID,
-      address: cameraIP,
-    });
+    const headersList = {
+      Accept: "*/*",
 
-    let reqOptions = {
-      url: `${mainURl}ip/create/`,
+      Authorization: `Token ${token}`,
+    };
+    const formdata = new FormData();
+    formdata.append("camera_name", cameraID);
+    formdata.append("camera_url", cameraIP);
+    formdata.append(
+      "location",
+      `[${thisLocation.lat.toFixed(4)},${thisLocation.lng.toFixed(4)}]`
+    );
+
+    const reqOptions = {
+      url: `${localStorage.getItem("apiAdress")}/camera/`,
       method: "POST",
       headers: headersList,
-      data: bodyContent,
+      data: formdata,
     };
     if (cameraID && cameraIP) {
       axios
@@ -107,14 +110,15 @@ function CameraPage({ mainURl }) {
         });
     } else {
       setHidedSnack(false);
-      if (!cameraID && !cameraIP) {
+      if (!cameraID && !cameraIP && !thisLocation) {
         setSnackBarText("Iltimos ma'lumotlarni kiriting");
       } else if (!cameraID) {
         setSnackBarText("Iltimos ID raqamni kiriting");
       } else if (!cameraIP) {
         setSnackBarText("Iltimos IP manzilni kiriting");
+      } else if (!thisLocation) {
+        setSnackBarText("Iltimos Joylashuvni kiriting");
       }
-
       setTimeout(() => {
         setHidedSnack(true);
       }, 3000);
@@ -141,39 +145,6 @@ function CameraPage({ mainURl }) {
         console.error("Ошибка", error);
       });
   };
-  const updateCamera = () => {
-    let bodyContent = JSON.stringify({
-      name: cameraID,
-      address: cameraIP,
-    });
-    let reqOptions = {
-      url: `${mainURl}ip/${updatingCameraData}/update/`,
-      method: "PUT",
-      headers: headersList,
-      data: bodyContent,
-    };
-
-    axios
-      .request(reqOptions)
-      .then((response) => {
-        setHidedSnack(false);
-        setSnackBarText("Camera tahrirlandi");
-        refreshCameraPage();
-        setTimeout(() => {
-          setHidedSnack(true);
-        }, 3000);
-      })
-      .catch((error) => {
-        console.error("Ошибка", error);
-      });
-    setUpdatingCamera(false);
-  };
-  const updateCameraClick = (camera) => {
-    setUpdatingCamera(true);
-    setCameraID(camera.name);
-    setUpdatingCameraData(camera.name);
-    setCameraIP(camera.address);
-  };
 
   return (
     <>
@@ -193,69 +164,55 @@ function CameraPage({ mainURl }) {
             <div className="camera_list">
               {cameras
                 ? cameras.map((camera) => (
+                  <div
+                    key={camera.camera_name}
+                    className="camera_list_item"
+                    onClick={() => setActiveCamera(camera)}
+                  >
                     <div
-                      key={camera.camera_name}
-                      className="camera_list_item"
-                      onClick={() => setActiveCamera(camera)}
+                      className="big_wrapper"
+                      onMouseEnter={() =>
+                        setActiveActions(camera.camera_name)
+                      }
+                      onMouseLeave={() => setActiveActions(0)}
                     >
-                      <div
-                        className="big_wrapper"
-                        onMouseEnter={() =>
-                          setActiveActions(camera.camera_name)
-                        }
-                        onMouseLeave={() => setActiveActions(0)}
-                      >
-                        <div className="wrapper">
-                          <div className="label-container__top">
-                            <label htmlFor="" className="label-inner">
-                              {camera.camera_name}
-                            </label>
+                      <div className="wrapper">
+                        <div className="label-container__top">
+                          <label htmlFor="" className="label-inner">
+                            Joylashuv
+                          </label>
+                        </div>
+                        <div className="cyber_block">
+                          <div className="cyber_block_inner">
+                            {camera.camera_name}
                           </div>
-                          <div className="cyber_block">
-                            <div className="cyber_block_inner">
-                              {camera.location}
-                            </div>
-                          </div>
+                        </div>
 
-                          <div className="label-container__bottom">
-                            <label htmlFor="" className="label-inner">
-                              {" "}
-                              - - -{" "}
-                            </label>
-                          </div>
-                          <div
-                            className={
-                              activeActions === camera.camera_name
-                                ? "camera_item_actions"
-                                : "camera_item_actions camera_item_actions_hided"
-                            }
+                        <div className="label-container__bottom">
+                          <label htmlFor="" className="label-inner">
+                            {" "}
+                            - - -{" "}
+                          </label>
+                        </div>
+                        <div
+                          className={
+                            activeActions === camera.camera_name
+                              ? "camera_item_actions"
+                              : "camera_item_actions camera_item_actions_hided"
+                          }
+                        >
+                          <button>tahrirlash</button>
+                          <button
+                            onClick={() => deleteCamera(camera.camera_name)}
                           >
-                            <button onClick={() => updateCameraClick(camera)}>
-                              tahrirlash
-                            </button>
-                            <button
-                              onClick={() => deleteCamera(camera.camera_name)}
-                            >
-                              o'chirish
-                            </button>
-                          </div>
+                            o'chirish
+                          </button>
                         </div>
                       </div>
                     </div>
-                  ))
+                  </div>
+                ))
                 : ""}
-            </div>
-            <div className="add_camera_btn">
-              <div className="add_ser_btn df_aie_jce">
-                <div
-                  className="btn btn--primary login_btn"
-                  onClick={() => setFormVisible(true)}
-                >
-                  <div className="btn__container">Qo'shish</div>
-                  <div className="btn__bottom"></div>
-                  <div className="btn__noise"></div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -264,7 +221,7 @@ function CameraPage({ mainURl }) {
               <div className="wrapper">
                 <div className="label-container__top">
                   <label htmlFor="" className="label-inner">
-                    ID: {activeCamera.camera_name}
+                    Xarita
                   </label>
                 </div>
                 <div className="cyber_block">
@@ -275,7 +232,12 @@ function CameraPage({ mainURl }) {
                         }
                         alt={activeCamera.address}
                       /> */}
-                    <SelectMap />
+                    <SelectMap
+                      setFormVisible={setFormVisible}
+                      setThisLocation={setThisLocation}
+                      cameras={cameras}
+                      activeCamera={activeCamera}
+                    />
                   </div>
                 </div>
 
@@ -292,7 +254,7 @@ function CameraPage({ mainURl }) {
       </div>
 
       {!isFormVisible || (
-        <div className="add_user_from">
+        <div className="add_user_from add_camera_from">
           <div className="form_users">
             <div className="big_wrapper ">
               <div className="wrapper">
@@ -354,7 +316,13 @@ function CameraPage({ mainURl }) {
                   </label>
                 </div>
                 <div className="cyber_block">
-                  <div className="cyber_block_inner"></div>
+                  <div className="cyber_block_inner">
+                    <p>
+                      {" "}
+                      {thisLocation.lat.toFixed(4)},{" "}
+                      {thisLocation.lng.toFixed(4)}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="label-container__bottom">
@@ -370,76 +338,6 @@ function CameraPage({ mainURl }) {
                 <div
                   className="btn btn--primary login_btn"
                   onClick={saveCamera}
-                >
-                  <div className="btn__container">Saqlash</div>
-                  <div className="btn__bottom"></div>
-                  <div className="btn__noise"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {!updatingCamera || (
-        <div className="add_user_from">
-          <div className="form_users">
-            <div className="big_wrapper ">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Camera Id
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      value={cameraID}
-                      onChange={(e) => setCameraID(e.target.value)}
-                      className="editor-field__input"
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper ">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    IP manzil
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={cameraIP}
-                      onChange={(e) => setCameraIP(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="add_camera_btn">
-              <div className="add_ser_btn">
-                <div
-                  className="btn btn--primary login_btn"
-                  onClick={updateCamera}
                 >
                   <div className="btn__container">Saqlash</div>
                   <div className="btn__bottom"></div>

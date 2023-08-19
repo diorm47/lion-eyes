@@ -138,7 +138,11 @@
   margin-bottom: 30px;
 }
 .form_users .cyber_block {
+  height: 50px;
+}
+.form_users .cyber_block, .editor-field__container {
   background: #0f1020;
+  padding-left: 15px;
 }
 
 .employer_card {

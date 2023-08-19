@@ -95,6 +95,7 @@ a {
 }
 .cyber_block_inner {
   position: relative;
+  width: 100%;
 }
 
 .cyber_block:after {

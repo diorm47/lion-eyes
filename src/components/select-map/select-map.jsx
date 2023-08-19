@@ -1,12 +1,20 @@
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
 import marker from "../../assets/marker.png";
+import redMarker from "../../assets/red-marker.png";
 import "./select-map.css";
 
-const center = [51.505, -0.09];
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  Tooltip
+} from "react-leaflet";
 
-function DisplayPosition({ map, setSelected }) {
+const center = [41.004, 71.6832];
+
+function DisplayPosition({ map, setSelected, }) {
   const [position, setPosition] = useState(() => map.getCenter());
 
   const onClick = useCallback(() => {
@@ -30,15 +38,32 @@ function DisplayPosition({ map, setSelected }) {
   }, [map, onMove]);
 
   return (
-    <p>
-      lat: {position.lat.toFixed(4)}, lon: {position.lng.toFixed(4)}
-    </p>
+    <div className="this_location">
+      <p>
+        lat: {position.lat.toFixed(4)}, lon: {position.lng.toFixed(4)}
+      </p>
+    </div>
   );
 }
 
-function SelectMap() {
+function SelectMap({ setFormVisible, setThisLocation, cameras, activeCamera }) {
   const [map, setMap] = useState(null);
   const [selected, setSelected] = useState([]);
+  const [positionsList, setPositionList] = useState([]);
+
+  useEffect(() => {
+    setPositionList(cameras);
+  }, [cameras]);
+  useEffect(() => {
+    setThisLocation(selected);
+  }, [selected, setThisLocation]);
+  const getJsonLocation = (location) => {
+    const coordinates = location
+      .slice(1, -1)
+      .split(",")
+      .map((num) => parseFloat(num.trim()));
+    return coordinates;
+  };
 
   const displayMap = useMemo(
     () => (
@@ -53,12 +78,53 @@ function SelectMap() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        {
+          positionsList.map((position) => (
+            <Marker
+              key={position.camera_name}
+              position={getJsonLocation(position.location)}
+              icon={
+                new L.Icon({
+                  iconUrl:
+                    activeCamera === position.location
+                      ? redMarker
+                      : marker,
+
+                  iconSize: [40, 40],
+                  iconAnchor: [20, 40],
+                  popupAnchor: [0, -40],
+                })
+              }
+            // eventHandlers={{
+            //   click: () => {
+            //     showInfoModal(position);
+            //   },
+            // }}
+            >
+              <Tooltip>{position.camera_name}</Tooltip>
+            </Marker>
+          ))}
+
+
         <div className="center_marker">
           <img src={marker} alt="" />
         </div>
+
+        <div className="add_camera_btn add_camera_btn_location">
+          <div className="add_ser_btn df_aie_jce">
+            <div
+              className="btn btn--primary login_btn"
+              onClick={() => setFormVisible(true)}
+            >
+              <div className="btn__container">Qo'shish</div>
+              <div className="btn__bottom"></div>
+              <div className="btn__noise"></div>
+            </div>
+          </div>
+        </div>
       </MapContainer>
     ),
-    []
+    [positionsList, activeCamera, setFormVisible]
   );
 
   return (

@@ -12,3 +12,13 @@
 .center_marker img {
   width: 100%;
 }
+
+.this_location {
+  position: absolute;
+  z-index: 1111;
+  background: #000;
+  right: 0;
+  padding: 2px 3px;
+  width: 230px;
+  text-align: center;
+}

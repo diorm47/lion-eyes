@@ -72,7 +72,6 @@ function CameraPage({ mainURl }) {
   const saveCamera = () => {
     const headersList = {
       Accept: "*/*",
-
       Authorization: `Token ${token}`,
     };
     const formdata = new FormData();
@@ -125,8 +124,8 @@ function CameraPage({ mainURl }) {
     }
   };
   const deleteCamera = (name) => {
-    let reqOptions = {
-      url: `${mainURl}ip/${name}/delete`,
+    const reqOptions = {
+      url: `${localStorage.getItem("apiAdress")}/camera/${name}`,
       method: "DELETE",
       headers: headersList,
     };
@@ -201,7 +200,7 @@ function CameraPage({ mainURl }) {
                               : "camera_item_actions camera_item_actions_hided"
                           }
                         >
-                          <button>tahrirlash</button>
+                          <button >tahrirlash</button>
                           <button
                             onClick={() => deleteCamera(camera.camera_name)}
                           >
@@ -253,7 +252,7 @@ function CameraPage({ mainURl }) {
         </div>
       </div>
 
-      {!isFormVisible || (
+      {isFormVisible || updatingCamera ? (
         <div className="add_user_from add_camera_from">
           <div className="form_users">
             <div className="big_wrapper ">
@@ -316,7 +315,7 @@ function CameraPage({ mainURl }) {
                   </label>
                 </div>
                 <div className="cyber_block">
-                  <div className="cyber_block_inner">
+                  <div className="cyber_block_inner coordinates_block">
                     <p>
                       {" "}
                       {thisLocation.lat.toFixed(4)},{" "}
@@ -347,7 +346,7 @@ function CameraPage({ mainURl }) {
             </div>
           </div>
         </div>
-      )}
+      ) : ""}
     </>
   );
 }

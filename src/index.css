@@ -95,7 +95,14 @@ a {
 }
 .cyber_block_inner {
   position: relative;
+
+  
   width: 100%;
+  height: 100%;
+}
+.coordinates_block {
+  display: flex;
+  align-items: center;
 }
 
 .cyber_block:after {

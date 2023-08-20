@@ -11,20 +11,20 @@ function Users({ mainURl }) {
   const [serchingItem, setSerchingItem] = useState("");
   const [isSideBarVisible, setSidebarVisible] = useState(false);
   const [isUserUpdating, setUserUpdating] = useState(false);
+  const [updatingUser, setUpdatingUser] = useState('');
   const [hidedSnack, setHidedSnack] = useState(true);
   const [snackBarText, setSnackBarText] = useState("");
   const [activeActions, setActiveActions] = useState();
   const [updatingUserID, setUpdatingUserID] = useState("");
-  const [marginNone, setMarginNone] = useState();
 
   // Employer data
-  const [employerID, setEmployerID] = useState("");
-  const [employerRank, setEmployerRank] = useState("");
-  const [employerPostion, setEmployerPostion] = useState("");
+
   const [employerName, setEmployerName] = useState("");
   const [employerAvatar, setEmployerAvatar] = useState(null);
+  const [employerData, setEmployerData] = useState("");
+
   const [employerAvatarForSend, setEmployerAvatarForSend] = useState(null);
-  const [employerEmployerZip, setEmployerEmployerZip] = useState(null);
+
   const [employerLastName, setEmployerLastName] = useState("");
   const [employerMiddleName, setEmployerMiddleName] = useState("");
   const [activeItem, setActiveItem] = useState();
@@ -32,37 +32,20 @@ function Users({ mainURl }) {
   const token = sessionStorage.getItem("token");
 
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate, token]);
+  // useEffect(() => {
+  //   if (!token) {
+  //     navigate("/login");
+  //   }
+  // }, [navigate, token]);
 
-  let headersList = {
+  const headersList = {
     Accept: "*/*",
     "Content-Type": "application/json",
     Authorization: `Token ${token}`,
   };
-
-  useEffect(() => {
-    let reqOptions = {
-      url: `${mainURl}employees/list/`,
-      method: "GET",
-      headers: headersList,
-    };
-
-    axios
-      .request(reqOptions)
-      .then((response) => {
-        setEmployeesList(response.data);
-      })
-      .catch((error) => {
-        console.error("Ошибка", error);
-      });
-  }, []);
   const refreshUsersPage = () => {
     let reqOptions = {
-      url: `${mainURl}employees/list/`,
+      url: `${localStorage.getItem("apiAdress")}/users/`,
       method: "GET",
       headers: headersList,
     };
@@ -76,40 +59,49 @@ function Users({ mainURl }) {
         console.error("Ошибка", error);
       });
   };
+  useEffect(() => {
+    refreshUsersPage()
+  }, []);
+
   const handleModalOverlay = () => {
     setFormVisible(false);
     setSidebarVisible(false);
     setUserUpdating(false);
   };
   const addEmployer = () => {
+    const headersList = {
+      Accept: "*/*",
+      Authorization: `Token ${token}`,
+    };
     const formData = new FormData();
-    formData.append("employee_id", employerID);
     formData.append("first_name", employerName);
-    formData.append("rank", employerRank);
-    formData.append("position", employerPostion);
-    formData.append("main_image", employerAvatarForSend || employerAvatar);
+    formData.append("image", employerAvatarForSend || employerAvatar);
     formData.append("last_name", employerLastName);
     formData.append("middle_name", employerMiddleName);
-    // formData.append("images", employerEmployerZip);
+    formData.append("description", employerData);
 
-    let reqOptions = {
-      url: `${mainURl}employees/create/`,
+
+    const reqOptions = {
+      url: `${localStorage.getItem("apiAdress")}/users/`,
       method: "POST",
-
       data: formData,
+      headers: headersList,
     };
 
+    const reqOptionsUpdate = {
+      url: `${localStorage.getItem("apiAdress")}/users/${updatingUser}/`,
+      method: "PUT",
+      data: formData,
+      headers: headersList,
+    };
     if (
-      employerID &&
       employerName &&
-      employerRank &&
-      employerPostion &&
       employerAvatarForSend &&
       employerLastName &&
       employerMiddleName
     ) {
       axios
-        .request(reqOptions)
+        .request(isUserUpdating ? reqOptionsUpdate : reqOptions)
         .then((response) => {
           setHidedSnack(false);
           if (!updatingUserID) {
@@ -122,19 +114,13 @@ function Users({ mainURl }) {
             setHidedSnack(true);
           }, 3000);
           handleModalOverlay();
-
           setUpdatingUserID();
-          setEmployerID();
-          setEmployerRank();
-          setEmployerPostion();
           setEmployerName();
           setEmployerAvatar();
           setEmployerAvatarForSend();
           setEmployerLastName();
           setEmployerMiddleName();
           setUserUpdating(false);
-
-
         })
         .catch((error) => {
           setHidedSnack(false);
@@ -145,13 +131,7 @@ function Users({ mainURl }) {
         });
     } else {
       setHidedSnack(false);
-      if (!employerID) {
-        setSnackBarText("Iltimos ID raqamini kiriting");
-      } else if (!employerRank) {
-        setSnackBarText("Iltimos unvonni kiriting");
-      } else if (!employerPostion) {
-        setSnackBarText("Iltimos lavozimni kiriting");
-      } else if (!employerName) {
+      if (!employerName) {
         setSnackBarText("Iltimos ismni kiriting");
       } else if (!employerLastName) {
         setSnackBarText("Iltimos familiyani kiriting");
@@ -178,12 +158,10 @@ function Users({ mainURl }) {
       reader.readAsDataURL(file);
     }
   };
-  const saveZip = (e) => {
-    setEmployerEmployerZip(e.target.files[0]);
-  };
+
   const deleteUser = (id) => {
-    let reqOptions = {
-      url: `${mainURl}employees/${id}/delete/`,
+    const reqOptions = {
+      url: `${localStorage.getItem("apiAdress")}/users/${id}/`,
       method: "DELETE",
       headers: headersList,
     };
@@ -208,84 +186,6 @@ function Users({ mainURl }) {
         }, 3000);
       });
   };
-  const updateUserClick = (employer) => {
-    setUpdatingUserID(employer.employee_id);
-    setEmployerID(employer.employee_id);
-    setEmployerRank(employer.rank);
-    setEmployerPostion(employer.position);
-    setEmployerName(employer.first_name);
-    setEmployerAvatar(employer.main_image);
-    setEmployerAvatarForSend(employer.main_image);
-    setEmployerLastName(employer.last_name);
-    setEmployerMiddleName(employer.middle_name);
-    setUserUpdating(true);
-  };
-  const updateEmployerData = () => {
-    const formData = new FormData();
-    formData.append("employee_id", employerID);
-    formData.append("first_name", employerName);
-    formData.append("rank", employerRank);
-    formData.append("position", employerPostion);
-    formData.append("main_image", employerAvatarForSend || employerAvatar);
-    formData.append("last_name", employerLastName);
-    formData.append("middle_name", employerMiddleName);
-    // formData.append("images", employerEmployerZip);
-
-    let reqOptions_1 = {
-      url: `${mainURl}employees/${updatingUserID}/edit/`,
-      method: "PUT",
-      headers: headersList,
-      data: formData,
-    };
-
-    if (
-      employerID &&
-      employerName &&
-      employerRank &&
-      employerPostion &&
-      employerAvatarForSend &&
-      employerLastName &&
-      employerMiddleName
-    ) {
-      axios
-        .request(reqOptions_1)
-        .then(() => {
-          setHidedSnack(false);
-          setSnackBarText("Hodim ma'lumotlari yangilandi");
-          refreshUsersPage();
-          setTimeout(() => {
-            setHidedSnack(true);
-          }, 3000);
-        })
-        .catch((error) => {
-          setHidedSnack(false);
-          setSnackBarText("Xatolik. Qaytadan urunib ko'ring");
-          setTimeout(() => {
-            setHidedSnack(true);
-          }, 3000);
-        });
-    } else {
-      setHidedSnack(false);
-      if (!employerID) {
-        setSnackBarText("Iltimos ID raqamini kiriting");
-      } else if (!employerRank) {
-        setSnackBarText("Iltimos unvonni kiriting");
-      } else if (!employerPostion) {
-        setSnackBarText("Iltimos lavozimni kiriting");
-      } else if (!employerName) {
-        setSnackBarText("Iltimos ismni kiriting");
-      } else if (!employerLastName) {
-        setSnackBarText("Iltimos familiyani kiriting");
-      } else if (!employerMiddleName) {
-        setSnackBarText("Iltimos ota ismini kiriting");
-      } else if (!employerAvatarForSend) {
-        setSnackBarText("Iltimos suratni kiriting");
-      }
-      setTimeout(() => {
-        setHidedSnack(true);
-      }, 3000);
-    }
-  };
 
   const search = (employeesList) => {
     return employeesList
@@ -304,6 +204,18 @@ function Users({ mainURl }) {
     newArray.push(employeesList[0]);
     setEmployeesList(newArray);
   };
+
+  const updateUsers = (employer) => {
+    setUserUpdating(true)
+    setUpdatingUser(employer.user_id)
+    setEmployerData(employer.description)
+    setEmployerName(employer.first_name);
+    setEmployerAvatar(employer.image);
+    setEmployerAvatarForSend(employer.image);
+    setEmployerLastName(employer.last_name);
+    setEmployerMiddleName(employer.middle_name);
+
+  }
 
   return (
     <>
@@ -362,37 +274,37 @@ function Users({ mainURl }) {
                 .map((employer, index, self) => (
                   <div
                     className={
-                      activeItem === employer.employee_id
+                      activeItem === employer.user_id
                         ? "users_list_item z_index_1111"
                         : "users_list_item"
                     }
-                    key={employer.employee_id}
-                    onMouseEnter={() => setActiveActions(employer.employee_id)}
+                    key={employer.user_id}
+                    onMouseEnter={() => setActiveActions(employer.user_id)}
                     onMouseLeave={() => setActiveActions("")}
                     onWheel={() => moveElementToEnd()}
                   >
                     <div
                       className={
-                        activeActions === employer.employee_id
+                        activeActions === employer.user_id
                           ? "camera_item_actions user_actions"
                           : "camera_item_actions user_actions camera_item_actions_hided"
                       }
                     >
-                      <button onClick={() => updateUserClick(employer)}>
+                      <button onClick={() => updateUsers(employer)}>
                         tahrirlash
                       </button>
-                      <button onClick={() => deleteUser(employer.employee_id)}>
+                      <button onClick={() => deleteUser(employer.user_id)}>
                         o'chirish
                       </button>
                     </div>
                     <div
                       className="big_wrapper"
-                      onMouseEnter={() => setMarginNone(index)}
-                      onMouseLeave={() => setMarginNone()}
+                    // onMouseEnter={() => setMarginNone(index)}
+                    // onMouseLeave={() => setMarginNone()}
                     >
                       <div
                         className="wrapper"
-                        onClick={() => setActiveItem(employer.employee_id)}
+                        onClick={() => setActiveItem(employer.user_id)}
                       >
                         <div className="label-container__top">
                           <label htmlFor="" className="label-inner">
@@ -402,21 +314,10 @@ function Users({ mainURl }) {
                         <div className="cyber_block">
                           <div className="cyber_block_inner employer_card">
                             <div className="employer_left_img">
-                              <img src={employer.main_image} alt="" />
+                              <img src={employer.image} alt="" />
                             </div>
                             <div className="right_employer_desc">
-                              <div>
-                                <p>ID:</p>
-                                <p>{employer.employee_id}</p>
-                              </div>
-                              <div>
-                                <p>Unvon:</p>
-                                <p>{employer.rank}</p>
-                              </div>
-                              <div>
-                                <p>Lavozim:</p>
-                                <p>{employer.position}</p>
-                              </div>
+
                               <div>
                                 <p>Ism:</p>
                                 <p>{employer.first_name}</p>
@@ -428,6 +329,10 @@ function Users({ mainURl }) {
                               <div>
                                 <p>Otasini ismi:</p>
                                 <p>{employer.middle_name}</p>
+                              </div>
+                              <div>
+                                <p>Ma'lumot:</p>
+                                <p>{employer.description}</p>
                               </div>
                             </div>
                           </div>
@@ -446,87 +351,10 @@ function Users({ mainURl }) {
           </div>
         </div>
       </div>
-      {!isFormVisible || (
+      {isFormVisible || isUserUpdating ? (
         <div className="add_user_from">
           <div className="form_users">
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    ID
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerID}
-                      onChange={(e) => setEmployerID(e.target.value)}
-                    />
-                  </div>
-                </div>
 
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Unvon
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerRank}
-                      onChange={(e) => setEmployerRank(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Lavozim
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerPostion}
-                      onChange={(e) => setEmployerPostion(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
             <div className="big_wrapper">
               <div className="wrapper">
                 <div className="label-container__top">
@@ -605,6 +433,29 @@ function Users({ mainURl }) {
                 </div>
               </div>
             </div>
+            <div className="big_wrapper employer_textarea">
+              <div className="wrapper">
+                <div className="label-container__top">
+                  <label htmlFor="" className="label-inner">
+                    Ma'lumot
+                  </label>
+                </div>
+                <div className="cyber_block">
+                  <div className="cyber_block_inner">
+                    <textarea className="editor-field__input" value={employerData}
+                      onChange={(e) => setEmployerData(e.target.value)}></textarea>
+
+                  </div>
+                </div>
+
+                <div className="label-container__bottom">
+                  <label htmlFor="" className="label-inner">
+                    {" "}
+                    - - -{" "}
+                  </label>
+                </div>
+              </div>
+            </div>
             <div className="file_ipload_input">
               <div className="big_wrapper">
                 <div className="wrapper">
@@ -613,7 +464,7 @@ function Users({ mainURl }) {
                       Surati
                     </label>
                   </div>
-                  <div className="cyber_block">
+                  <div className="cyber_block image_upload_block">
                     <div className="cyber_block_inner employer_img">
                       {employerAvatar && (
                         <img src={employerAvatar} alt="user avatar" />
@@ -639,15 +490,7 @@ function Users({ mainURl }) {
                     </div>
                   </div>
                 </label>
-                <label htmlFor="employer_zip">
-                  <div className="add_ser_btn save_employer">
-                    <div className="btn btn--primary ">
-                      <div className="btn__container">ZIP</div>
-                      <div className="btn__bottom"></div>
-                      <div className="btn__noise"></div>
-                    </div>
-                  </div>
-                </label>
+
                 <input
                   type="file"
                   accept="image/*"
@@ -656,13 +499,7 @@ function Users({ mainURl }) {
                   placeholder="Surat tanlang"
                   onChange={saveImage}
                 />
-                <input
-                  type="file"
-                  id="employer_zip"
-                  className="editor-field__input"
-                  placeholder="Surat tanlang"
-                  onChange={saveZip}
-                />
+
                 <div className="add_ser_btn save_employer">
                   <div className="btn btn--primary " onClick={addEmployer}>
                     <div className="btn__container">Saqlash</div>
@@ -674,239 +511,8 @@ function Users({ mainURl }) {
             </div>
           </div>
         </div>
-      )}
-      {!isUserUpdating || (
-        <div className="add_user_from">
-          <div className="form_users">
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    ID
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerID}
-                      onChange={(e) => setEmployerID(e.target.value)}
-                    />
-                  </div>
-                </div>
+      ) : ""}
 
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Unvon
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerRank}
-                      onChange={(e) => setEmployerRank(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Lavozim
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerPostion}
-                      onChange={(e) => setEmployerPostion(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Ism
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerName}
-                      onChange={(e) => setEmployerName(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Familiya
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerLastName}
-                      onChange={(e) => setEmployerLastName(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="big_wrapper">
-              <div className="wrapper">
-                <div className="label-container__top">
-                  <label htmlFor="" className="label-inner">
-                    Ota ismi
-                  </label>
-                </div>
-                <div className="cyber_block">
-                  <div className="cyber_block_inner">
-                    <input
-                      type="text"
-                      className="editor-field__input"
-                      value={employerMiddleName}
-                      onChange={(e) => setEmployerMiddleName(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="label-container__bottom">
-                  <label htmlFor="" className="label-inner">
-                    {" "}
-                    - - -{" "}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="file_ipload_input">
-              <div className="big_wrapper">
-                <div className="wrapper">
-                  <div className="label-container__top">
-                    <label htmlFor="" className="label-inner">
-                      Surati
-                    </label>
-                  </div>
-                  <div className="cyber_block">
-                    <div className="cyber_block_inner employer_img">
-                      {employerAvatar && (
-                        <img src={employerAvatar} alt="user avatar" />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="label-container__bottom">
-                    <label htmlFor="" className="label-inner">
-                      {" "}
-                      - - -{" "}
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className="right_employer_input">
-                <label htmlFor="employer_avatar">
-                  <div className="add_ser_btn save_employer">
-                    <div className="btn btn--primary">
-                      <div className="btn__container">Yuklash</div>
-                      <div className="btn__bottom"></div>
-                      <div className="btn__noise"></div>
-                    </div>
-                  </div>
-                </label>
-                <label htmlFor="employer_zip">
-                  <div className="add_ser_btn save_employer">
-                    <div className="btn btn--primary ">
-                      <div className="btn__container">ZIP</div>
-                      <div className="btn__bottom"></div>
-                      <div className="btn__noise"></div>
-                    </div>
-                  </div>
-                </label>
-                <input
-                  type="file"
-                  id="employer_zip"
-                  className="editor-field__input"
-                  placeholder="Surat tanlang"
-                  onChange={saveZip}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="employer_avatar"
-                  className="editor-field__input"
-                  placeholder="Surat tanlang"
-                  onChange={saveImage}
-                />
-                <div className="add_ser_btn save_employer">
-                  <div
-                    className="btn btn--primary "
-                    onClick={updateEmployerData}
-                  >
-                    <div className="btn__container">Saqlash</div>
-                    <div className="btn__bottom"></div>
-                    <div className="btn__noise"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

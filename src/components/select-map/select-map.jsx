@@ -81,7 +81,7 @@ function SelectMap({ setFormVisible, setThisLocation, cameras, activeCamera }) {
         {
           positionsList.map((position) => (
             <Marker
-              key={position.camera_name}
+              key={position.cam_id}
               position={getJsonLocation(position.location)}
               icon={
                 new L.Icon({
@@ -101,13 +101,13 @@ function SelectMap({ setFormVisible, setThisLocation, cameras, activeCamera }) {
             //   },
             // }}
             >
-              <Tooltip>{position.camera_name}</Tooltip>
+              <Tooltip>{position.name}</Tooltip>
             </Marker>
           ))}
 
 
         <div className="center_marker">
-          <img src={marker} alt="" />
+          <img src={redMarker} alt="" />
         </div>
 
         <div className="add_camera_btn add_camera_btn_location">

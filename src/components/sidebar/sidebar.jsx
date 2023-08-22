@@ -1,15 +1,24 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import "./sidebar.css";
 
 function Sidebar({ isSideBarVisible, setSidebarVisible }) {
+  const [activeSidebar, setActiveSideBar] = useState(true)
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname === "/checkout") {
+      setActiveSideBar(false);
+    } else {
+      setActiveSideBar(true);
+    }
+  }, [location.pathname]);
   return (
     <div
       className={
         isSideBarVisible ? "sidebar_content" : "sidebar_content hided_sidebar"
       }
     >
-      <div className="editor-field editor-field__textbox sidebar_wrapper">
+      <div className={activeSidebar ? "editor-field editor-field__textbox sidebar_wrapper" : "display_none"}>
         <div className="editor-field__label-container">
           <label
             onClick={() => setSidebarVisible(!isSideBarVisible)}
@@ -40,11 +49,7 @@ function Sidebar({ isSideBarVisible, setSidebarVisible }) {
               </div>
             </NavLink>
 
-            <NavLink to="/statistic">
-              <div className="sidebar_content_link">
-                <p>Statistika</p>
-              </div>
-            </NavLink>
+
           </div>
         </div>
         <span className="editor-field__bottom"></span>

@@ -10,6 +10,7 @@ function CameraPage({ mainURl }) {
   const [isFormVisible, setFormVisible] = useState(false);
   const [activeCamera, setActiveCamera] = useState(false);
   const [updatingCamera, setUpdatingCamera] = useState(false);
+  const [updatingCameraID, setUpdatingCameraID] = useState('');
 
   const [cameraID, setCameraID] = useState();
   const [cameraIP, setCameraIP] = useState();
@@ -39,7 +40,7 @@ function CameraPage({ mainURl }) {
   const headersList = {
     Accept: "*/*",
     "Content-Type": "application/json",
-    Authorization: `Token ${token}`,
+    Authorization: `${token}`,
   };
 
   const refreshCameraPage = () => {
@@ -68,18 +69,20 @@ function CameraPage({ mainURl }) {
     setFormVisible(false);
     setSidebarVisible(false);
     setUpdatingCamera(false);
+    setCameraID()
+    setCameraIP()
   };
   const saveCamera = () => {
     const headersList = {
       Accept: "*/*",
-      Authorization: `Token ${token}`,
+      Authorization: `${token}`,
     };
     const formdata = new FormData();
     formdata.append("camera_name", cameraID);
     formdata.append("camera_url", cameraIP);
     formdata.append(
       "location",
-      `[${thisLocation.lat.toFixed(4)},${thisLocation.lng.toFixed(4)}]`
+      `[${thisLocation.lat ? thisLocation.lat.toFixed(4) : thisLocation[0]},${thisLocation.lng ? thisLocation.lng.toFixed(4) : thisLocation[1]}]`
     );
 
     const reqOptions = {
@@ -88,17 +91,27 @@ function CameraPage({ mainURl }) {
       headers: headersList,
       data: formdata,
     };
+    const reqOptionsPut = {
+      url: `${localStorage.getItem("apiAdress")}/camera/${updatingCameraID}/`,
+      method: "PUT",
+      headers: headersList,
+      data: formdata,
+    };
     if (cameraID && cameraIP) {
       axios
-        .request(reqOptions)
+        .request(updatingCamera ? reqOptionsPut : reqOptions)
         .then((response) => {
           setHidedSnack(false);
-          setSnackBarText("Camera qo'shildi");
+          setSnackBarText(updatingCamera ? "Camera yangilandi" : "Camera qo'shildi");
           refreshCameraPage();
           setTimeout(() => {
             setHidedSnack(true);
           }, 3000);
           setFormVisible(false);
+          setUpdatingCamera(false)
+          setCameraID()
+          setCameraIP()
+          
         })
         .catch((error) => {
           setHidedSnack(false);
@@ -123,9 +136,9 @@ function CameraPage({ mainURl }) {
       }, 3000);
     }
   };
-  const deleteCamera = (name) => {
+  const deleteCamera = (cam_id) => {
     const reqOptions = {
-      url: `${localStorage.getItem("apiAdress")}/camera/${name}`,
+      url: `${localStorage.getItem("apiAdress")}/camera/${cam_id}/`,
       method: "DELETE",
       headers: headersList,
     };
@@ -144,6 +157,15 @@ function CameraPage({ mainURl }) {
         console.error("Ошибка", error);
       });
   };
+
+  const updateCamera = (camera) => {
+    setUpdatingCameraID(camera.cam_id)
+    setUpdatingCamera(true)
+    setCameraID(camera.name)
+    setCameraIP(camera.address)
+    setThisLocation(getJsonLocation(camera.location))
+  }
+
 
   return (
     <>
@@ -164,14 +186,14 @@ function CameraPage({ mainURl }) {
               {cameras
                 ? cameras.map((camera) => (
                   <div
-                    key={camera.camera_name}
+                    key={camera.cam_id}
                     className="camera_list_item"
                     onClick={() => setActiveCamera(camera)}
                   >
                     <div
                       className="big_wrapper"
                       onMouseEnter={() =>
-                        setActiveActions(camera.camera_name)
+                        setActiveActions(camera.cam_id)
                       }
                       onMouseLeave={() => setActiveActions(0)}
                     >
@@ -183,7 +205,7 @@ function CameraPage({ mainURl }) {
                         </div>
                         <div className="cyber_block">
                           <div className="cyber_block_inner">
-                            {camera.camera_name}
+                            {camera.name}
                           </div>
                         </div>
 
@@ -195,14 +217,14 @@ function CameraPage({ mainURl }) {
                         </div>
                         <div
                           className={
-                            activeActions === camera.camera_name
+                            activeActions === camera.cam_id
                               ? "camera_item_actions"
                               : "camera_item_actions camera_item_actions_hided"
                           }
                         >
-                          <button >tahrirlash</button>
+                          <button onClick={() => updateCamera(camera)}>tahrirlash</button>
                           <button
-                            onClick={() => deleteCamera(camera.camera_name)}
+                            onClick={() => deleteCamera(camera.cam_id)}
                           >
                             o'chirish
                           </button>
@@ -255,7 +277,7 @@ function CameraPage({ mainURl }) {
       {isFormVisible || updatingCamera ? (
         <div className="add_user_from add_camera_from">
           <div className="form_users">
-            <div className="big_wrapper ">
+            <div className="big_wrapper">
               <div className="wrapper">
                 <div className="label-container__top">
                   <label htmlFor="" className="label-inner">
@@ -281,7 +303,7 @@ function CameraPage({ mainURl }) {
                 </div>
               </div>
             </div>
-            <div className="big_wrapper ">
+            <div className="big_wrapper">
               <div className="wrapper">
                 <div className="label-container__top">
                   <label htmlFor="" className="label-inner">
@@ -307,7 +329,7 @@ function CameraPage({ mainURl }) {
                 </div>
               </div>
             </div>
-            <div className="big_wrapper ">
+            <div className="big_wrapper">
               <div className="wrapper">
                 <div className="label-container__top">
                   <label htmlFor="" className="label-inner">
@@ -318,8 +340,8 @@ function CameraPage({ mainURl }) {
                   <div className="cyber_block_inner coordinates_block">
                     <p>
                       {" "}
-                      {thisLocation.lat.toFixed(4)},{" "}
-                      {thisLocation.lng.toFixed(4)}
+                      {thisLocation.lat ? thisLocation.lat.toFixed(4) : thisLocation[0]},{" "}
+                      {thisLocation.lng ? thisLocation.lng.toFixed(4) : thisLocation[1]}
                     </p>
                   </div>
                 </div>

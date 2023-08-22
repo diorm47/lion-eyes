@@ -41,10 +41,10 @@ function Users({ mainURl }) {
   const headersList = {
     Accept: "*/*",
     "Content-Type": "application/json",
-    Authorization: `Token ${token}`,
+    Authorization: `${token}`,
   };
   const refreshUsersPage = () => {
-    let reqOptions = {
+    const reqOptions = {
       url: `${localStorage.getItem("apiAdress")}/users/`,
       method: "GET",
       headers: headersList,
@@ -71,7 +71,7 @@ function Users({ mainURl }) {
   const addEmployer = () => {
     const headersList = {
       Accept: "*/*",
-      Authorization: `Token ${token}`,
+      Authorization: `${token}`,
     };
     const formData = new FormData();
     formData.append("first_name", employerName);
@@ -95,10 +95,7 @@ function Users({ mainURl }) {
       headers: headersList,
     };
     if (
-      employerName &&
-      employerAvatarForSend &&
-      employerLastName &&
-      employerMiddleName
+      employerAvatarForSend
     ) {
       axios
         .request(isUserUpdating ? reqOptionsUpdate : reqOptions)
@@ -109,9 +106,10 @@ function Users({ mainURl }) {
           } else {
             setSnackBarText("Hodim ma'lumotlari yangilandi");
           }
-          refreshUsersPage();
+
           setTimeout(() => {
             setHidedSnack(true);
+
           }, 3000);
           handleModalOverlay();
           setUpdatingUserID();
@@ -121,23 +119,23 @@ function Users({ mainURl }) {
           setEmployerLastName();
           setEmployerMiddleName();
           setUserUpdating(false);
+          refreshUsersPage();
+          if (isUserUpdating) {
+            window.location.reload()
+          }
+
         })
         .catch((error) => {
           setHidedSnack(false);
           setSnackBarText("Xatolik. Qaytadan urunib ko'ring");
           setTimeout(() => {
             setHidedSnack(true);
+
           }, 3000);
         });
     } else {
       setHidedSnack(false);
-      if (!employerName) {
-        setSnackBarText("Iltimos ismni kiriting");
-      } else if (!employerLastName) {
-        setSnackBarText("Iltimos familiyani kiriting");
-      } else if (!employerMiddleName) {
-        setSnackBarText("Iltimos ota ismini kiriting");
-      } else if (!employerAvatarForSend) {
+      if (!employerAvatarForSend) {
         setSnackBarText("Iltimos suratni kiriting");
       }
       setTimeout(() => {
@@ -199,7 +197,7 @@ function Users({ mainURl }) {
   const moveElementToEnd = () => {
     setActiveItem();
     const newArray = employeesList.filter(
-      (item) => item.employee_id !== employeesList[0].employee_id
+      (item) => item.user_id !== employeesList[0].user_id
     );
     newArray.push(employeesList[0]);
     setEmployeesList(newArray);
@@ -320,19 +318,19 @@ function Users({ mainURl }) {
 
                               <div>
                                 <p>Ism:</p>
-                                <p>{employer.first_name}</p>
+                                <p>{employer.first_name || "Yo'q"}</p>
                               </div>
                               <div>
                                 <p>Familiya:</p>
-                                <p>{employer.last_name}</p>
+                                <p>{employer.last_name || "Yo'q"}</p>
                               </div>
                               <div>
                                 <p>Otasini ismi:</p>
-                                <p>{employer.middle_name}</p>
+                                <p>{employer.middle_name || "Yo'q"}</p>
                               </div>
                               <div>
                                 <p>Ma'lumot:</p>
-                                <p>{employer.description}</p>
+                                <p>{employer.description || "Yo'q"}</p>
                               </div>
                             </div>
                           </div>

@@ -35,7 +35,7 @@ function MainPage() {
 
   const headersList = {
     Accept: "*/*",
-    Authorization: `Token ${token}`,
+    Authorization: `${token}`,
   };
   const getJsonLocation = (location) => {
     const coordinates = location
@@ -92,7 +92,7 @@ function MainPage() {
           positionsList.map((item) => (
             <div
               className="big_wrapper locations_list_item"
-              key={item.camera_name}
+              key={item.cam_id}
               onClick={() => changeCenterLocation(item)}
             >
               <div className="wrapper">
@@ -110,7 +110,7 @@ function MainPage() {
                           : ""
                       }
                     >
-                      {item.camera_name}
+                      {item.name}
                     </p>
                   </div>
                 </div>
@@ -136,7 +136,7 @@ function MainPage() {
             </div>
             <div className="cyber_block">
               <div className="cyber_block_inner">
-                {locationInfo && locationInfo.camera_name ? (
+                {locationInfo && locationInfo.name ? (
                   <div className="location_info_wrapper">
                     <img src={markerImg} alt="" />
                     <div className="exit_btn" onClick={() => setLocationInfo()}>
@@ -159,7 +159,7 @@ function MainPage() {
                   {positionsList &&
                     positionsList.map((position) => (
                       <Marker
-                        key={position.camera_name}
+                        key={position.cam_id}
                         position={getJsonLocation(position.location)}
                         icon={
                           new L.Icon({
@@ -179,7 +179,7 @@ function MainPage() {
                           },
                         }}
                       >
-                        <Tooltip>{position.camera_name}</Tooltip>
+                        <Tooltip>{position.name}</Tooltip>
                       </Marker>
                     ))}
 

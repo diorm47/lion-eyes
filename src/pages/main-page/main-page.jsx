@@ -1,7 +1,7 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -13,7 +13,7 @@ import markerImg from "../../assets/Back to future.jpg";
 import exitIcon from "../../assets/close-icon.png";
 import marker from "../../assets/marker.png";
 import redMarker from "../../assets/red-marker.png";
-import card from "../../assets/qLj2yc.jpg";
+
 import "./main-page.css";
 
 function SetViewOnClick({ coords, zoomCustom }) {
@@ -30,6 +30,8 @@ function MainPage() {
   ]);
   const [zoomCustom, setZoom] = useState(12);
   const [locationInfo, setLocationInfo] = useState();
+  const [detectedUser, setDetecteduser] = useState([]);
+  const [detectedAdress, setDetectedAdress] = useState("");
 
   const token = sessionStorage.getItem("token");
 
@@ -83,6 +85,54 @@ function MainPage() {
     setCenterPositions(getJsonLocation(position.location));
     setZoom(15);
   };
+
+  const logDivRef = useRef(null);
+  const getDetectedUsers = () => {
+    const evtSource = new EventSource(
+      `${localStorage.getItem("apiAdress")}/events`
+    );
+    evtSource.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+
+      setDetectedAdress(data.address);
+
+      if (data.type === "detected" && data.image !== detectedUser?.image)
+        setDetecteduser(data);
+    };
+    return () => {
+      evtSource.close();
+    };
+  };
+
+  useEffect(() => {
+    const reqOptions = {
+      url: `${localStorage.getItem("apiAdress")}/start`,
+      method: "POST",
+      headers: headersList,
+    };
+    axios
+      .request(reqOptions)
+      .then((response) => {
+        getDetectedUsers();
+      })
+      .catch((error) => {
+        console.error("Ошибка", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setDetectedAdress("");
+    }, 500);
+  }, [detectedAdress]);
+  useEffect(() => {
+    if (detectedUser) {
+      setTimeout(() => {
+        setDetecteduser();
+      }, 10000);
+    }
+
+  }, [detectedUser]);
 
 
   return (
@@ -164,7 +214,7 @@ function MainPage() {
                         icon={
                           new L.Icon({
                             iconUrl:
-                              centerPositions === position.location
+                              detectedAdress === position.address
                                 ? redMarker
                                 : marker,
 
@@ -199,8 +249,8 @@ function MainPage() {
           </div>
         </div>
       </div>
-      <div className="detected_data_list">
-        <div className="big_wrapper profile_right_user_card">
+      <div className="detected_data_list" ref={logDivRef}>
+        {detectedUser && detectedUser.last_name ? <div className="big_wrapper profile_right_user_card">
           <div className="wrapper">
             <div className="label-container__top">
               <label htmlFor="" className="label-inner">
@@ -210,14 +260,20 @@ function MainPage() {
             <div className="cyber_block">
               <div className="cyber_block_inner">
                 <div className="person-detected">
-                  <img src={card} alt="detected_image" />
+                  <div className="person_detected_image">
+                    <img
+                      src={detectedUser ? detectedUser.image : ""}
+                      alt="detected_image"
+                    />
+                  </div>
+
                   <div className="person-datas">
-                    <h2>Benedict Camberbutch</h2>
+                    <h2>{detectedUser.last_name} {detectedUser.first_name} {detectedUser.middle_name} </h2>
                     <p>
-                      <b>ID:</b> 308921890123158
+                      <b>Camera:</b> {detectedUser.name}
                     </p>
                     <p>
-                      <b>Yil:</b> 05.07.1970
+                      <b>Ma'lumot:</b> {detectedUser.description}
                     </p>
                   </div>
                 </div>
@@ -231,7 +287,8 @@ function MainPage() {
               </label>
             </div>
           </div>
-        </div>
+        </div> : ''}
+
       </div>
     </div>
   );

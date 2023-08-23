@@ -4,8 +4,7 @@ import MainPage from "./pages/main-page/main-page";
 import { Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/login-page/login-page";
 import CameraPage from "./pages/camera-page/camera-page";
-import UsersPage from "./pages/users-page/users"
-
+import UsersPage from "./pages/users-page/users";
 
 function App() {
   const [isSideBarVisible, setSidebarVisible] = useState(false);

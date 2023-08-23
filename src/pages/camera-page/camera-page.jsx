@@ -111,7 +111,7 @@ function CameraPage({ mainURl }) {
           setUpdatingCamera(false)
           setCameraID()
           setCameraIP()
-          
+
         })
         .catch((error) => {
           setHidedSnack(false);
@@ -166,7 +166,6 @@ function CameraPage({ mainURl }) {
     setThisLocation(getJsonLocation(camera.location))
   }
 
-
   return (
     <>
       <Snackbar hidedSnack={hidedSnack} snackBarText={snackBarText} />
@@ -183,7 +182,7 @@ function CameraPage({ mainURl }) {
         <div className="camera_wrapper">
           <div className="camera_list_wrapper">
             <div className="camera_list">
-              {cameras
+              {cameras && cameras.length >= 1
                 ? cameras.map((camera) => (
                   <div
                     key={camera.cam_id}
@@ -256,7 +255,7 @@ function CameraPage({ mainURl }) {
                     <SelectMap
                       setFormVisible={setFormVisible}
                       setThisLocation={setThisLocation}
-                      cameras={cameras}
+                      cameras={cameras.length >= 1 ? cameras : []}
                       activeCamera={activeCamera}
                     />
                   </div>

@@ -6,8 +6,9 @@ function Sidebar({ isSideBarVisible, setSidebarVisible }) {
   const [activeSidebar, setActiveSideBar] = useState(true)
   const location = useLocation();
   useEffect(() => {
-    if (location.pathname === "/checkout") {
+    if (location.pathname === "/login") {
       setActiveSideBar(false);
+  
     } else {
       setActiveSideBar(true);
     }
